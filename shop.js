@@ -96,6 +96,7 @@ function clearCart() {
 function formatPrice(num) {
   return (typeof num === 'number' && !isNaN(num)) ? num.toFixed(2) : '0.00';
 }
+
 // --- Render cart for checkout page ---
 function renderCartCheckout() {
   const cart = loadCart();
@@ -119,9 +120,11 @@ function renderCartCheckout() {
     const div = document.createElement('div');
     div.className = 'item';
     div.innerHTML = `
-      <span>${item} — $${formatPrice(price)} × ${quantity} = $${formatPrice(subtotal)}</span>;
+      <span>${item} — $${formatPrice(price)} × ${quantity} = $${formatPrice(subtotal)}</span>
+    `;
     cartDiv.appendChild(div);
   }
+}
 
 // --- Render Cart (for cart page) ---
 function renderCart() {

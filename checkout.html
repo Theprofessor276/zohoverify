@@ -55,7 +55,10 @@
   <button class="pay-btn" onclick="payNow()">Pay Now</button>
 
   <script src="shop.js"></script>
- <script>renderCartCheckout(); // Called when the script loads, initializes the cart and coupon UI</script>
-
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderCartCheckout();
+  });
+</script>
 </body>
 </html>
