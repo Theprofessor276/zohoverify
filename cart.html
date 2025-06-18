@@ -48,13 +48,39 @@
 </head>
 <body>
 
-  <div class="back" onclick="goBack()">← Back to Shop</div>
+  <!-- 🔊 Audio Player for Random Click Sounds -->
+  <audio id="clickPlayer" preload="auto"></audio>
+
+  <!-- 🔙 Back Button -->
+  <div class="back" onclick="playClick(); goBack()">← Back to Previous Page</div>
+
   <h2>Your Cart</h2>
+
+  <!-- 🧾 Cart Contents -->
   <div id="cartItems"></div>
-  <button class="clear-btn btn" onclick="clearCart()">Clear Cart</button>
-  <button class="checkout-btn" onclick="checkout()">Checkout</button>
+
+  <!-- 🧹 Clear and Checkout -->
+  <button class="clear-btn btn" onclick="playClick(); clearCart()">Clear Cart</button>
+  <button class="checkout-btn" onclick="playClick(); checkout()">Checkout</button>
 
   <script>
+    // ✅ Paths to only the valid click sounds
+    const clickPaths = [
+      "kenney_interface-sounds/Audio/click_001.ogg",
+      "kenney_interface-sounds/Audio/click_002.ogg",
+      "kenney_interface-sounds/Audio/click_003.ogg",
+      "kenney_interface-sounds/Audio/click_004.ogg",
+      "kenney_interface-sounds/Audio/click_005.ogg"
+    ];
+
+    function playClick() {
+      const player = document.getElementById("clickPlayer");
+      const randomSound = clickPaths[Math.floor(Math.random() * clickPaths.length)];
+      player.src = randomSound;
+      player.currentTime = 0;
+      player.play();
+    }
+
     function loadCart() {
       try {
         return JSON.parse(localStorage.getItem('cart')) || {};
@@ -68,6 +94,7 @@
     }
 
     function decreaseItem(itemName) {
+      playClick();
       const cart = loadCart();
       if (cart[itemName]) {
         cart[itemName].quantity -= 1;
@@ -80,6 +107,7 @@
     }
 
     function clearCart() {
+      playClick();
       if (confirm("Are you sure you want to clear your cart?")) {
         localStorage.removeItem('cart');
         renderCart();
@@ -126,14 +154,16 @@
     }
 
     function goBack() {
-      window.location.href = "index.html";
+      history.back();
     }
 
     function checkout() {
-      window.location.href = "error.html";
-    }
+ 	 playClick();
+  	window.location.href = "checkout.html";
+      }
 
-    renderCart(); // Initialize cart on load
+
+    renderCart(); // Initialize cart on page load
   </script>
 
 </body>

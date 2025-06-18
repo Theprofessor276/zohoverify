@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout</title>
+  <style>
+    body { font-family: sans-serif; padding: 30px; background: #fdfdfd; }
+    .item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: white;
+    }
+    .discount { color: green; }
+    .error { color: red; }
+    .input-row { margin-top: 20px; }
+    input[type="text"] {
+      padding: 8px;
+      width: 200px;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .pay-btn {
+      background-color: green;
+      color: white;
+      border: none;
+    }
+    .cancel-btn {
+      background-color: crimson;
+      color: white;
+      border: none;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Review Your Order</h2>
+  <div id="cartItems"></div>
+
+  <div class="input-row">
+    <label for="coupon">Coupon Code:</label><br>
+    <input type="text" id="coupon" placeholder="Enter code...">
+    <button onclick="applyCoupon()">Apply</button>
+    <button class="cancel-btn" onclick="cancelCoupon()">Cancel Coupon</button>
+    <div id="discountInfo"></div>
+  </div>
+
+  <h3 id="totalDisplay"></h3>
+  <button class="pay-btn" onclick="payNow()">Pay Now</button>
+
+  <script>
+    const cart = JSON.parse(localStorage.getItem("cart")) || {};
+    const cartDiv = document.getElementById("cartItems");
+    const totalDisplay = document.getElementById("totalDisplay");
+    const discountInfo = document.getElementById("discountInfo");
+    const couponInput = document.getElementById("coupon");
+
+    let subtotal = 0;
+    let discountAmount = 0;
+
+    const coupons = {
+      "SAVE10": { type: "percent", value: 10, expires: "2025-12-31" },
+      "TAKE5":  { type: "amount",  value: 5 },
+      "FREE100": { type: "percent", value: 100 },
+      // Add more coupons with optional expires field
+    };
+
+    function formatPrice(num) {
+      return "$" + (Math.max(num, 0)).toFixed(2);
+    }
+
+    function renderCart() {
+      cartDiv.innerHTML = "";
+      subtotal = 0;
+
+      for (const item in cart) {
+        const entry = cart[item];
+        const quantity = entry.quantity ?? 0;
+        const price = entry.price ?? 0;
+        const itemTotal = price * quantity;
+        subtotal += itemTotal;
+
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerText = `${item} — $${price.toFixed(2)} × ${quantity} = ${formatPrice(itemTotal)}`;
+        cartDiv.appendChild(div);
+      }
+
+      applySavedCoupon();
+      updateTotal();
+    }
+
+    function applyCoupon() {
+      const code = couponInput.value.trim().toUpperCase();
+      const coupon = coupons[code];
+
+      if (!coupon) {
+        discountAmount = 0;
+        discountInfo.innerHTML = `<span class="error">Invalid coupon code.</span>`;
+        localStorage.removeItem("coupon");
+        updateTotal();
+        return;
+      }
+
+      if (coupon.expires && isExpired(coupon.expires)) {
+        discountAmount = 0;
+        discountInfo.innerHTML = `<span class="error">Coupon expired on ${coupon.expires}.</span>`;
+        localStorage.removeItem("coupon");
+        updateTotal();
+        return;
+      }
+
+      localStorage.setItem("coupon", code);
+      applyDiscount(code, coupon);
+    }
+
+    function applySavedCoupon() {
+      const savedCode = localStorage.getItem("coupon");
+      if (!savedCode) return;
+
+      const coupon = coupons[savedCode];
+      if (!coupon) return;
+
+      if (coupon.expires && isExpired(coupon.expires)) {
+        localStorage.removeItem("coupon");
+        return;
+      }
+
+      couponInput.value = savedCode;
+      applyDiscount(savedCode, coupon);
+    }
+
+    function applyDiscount(code, coupon) {
+      if (coupon.type === "percent") {
+        discountAmount = subtotal * (coupon.value / 100);
+        discountInfo.innerHTML = `<span class="discount">Coupon applied: ${coupon.value}% off</span>`;
+      } else if (coupon.type === "amount") {
+        discountAmount = coupon.value;
+        discountInfo.innerHTML = `<span class="discount">Coupon applied: $${coupon.value.toFixed(2)} off</span>`;
+      } else {
+        discountAmount = 0;
+        discountInfo.innerHTML = "";
+      }
+
+      updateTotal();
+    }
+
+    function cancelCoupon() {
+      localStorage.removeItem("coupon");
+      couponInput.value = "";
+      discountAmount = 0;
+      discountInfo.innerHTML = `<span class="discount">Coupon removed.</span>`;
+      updateTotal();
+    }
+
+    function isExpired(dateString) {
+      const today = new Date();
+      const expireDate = new Date(dateString + "T23:59:59");
+      return today > expireDate;
+    }
+
+    function updateTotal() {
+      const total = subtotal - discountAmount;
+      totalDisplay.innerText = `Total: ${formatPrice(total)}`;
+    }
+
+    function payNow() {
+      window.location.href = "error.html";
+    }
+
+    renderCart();
+  </script>
+
+</body>
+</html>
