@@ -63,108 +63,12 @@
   <button class="clear-btn btn" onclick="playClick(); clearCart()">Clear Cart</button>
   <button class="checkout-btn" onclick="playClick(); checkout()">Checkout</button>
 
-  <script>
-    // ✅ Paths to only the valid click sounds
-    const clickPaths = [
-      "kenney_interface-sounds/Audio/click_001.ogg",
-      "kenney_interface-sounds/Audio/click_002.ogg",
-      "kenney_interface-sounds/Audio/click_003.ogg",
-      "kenney_interface-sounds/Audio/click_004.ogg",
-      "kenney_interface-sounds/Audio/click_005.ogg"
-    ];
-
-    function playClick() {
-      const player = document.getElementById("clickPlayer");
-      const randomSound = clickPaths[Math.floor(Math.random() * clickPaths.length)];
-      player.src = randomSound;
-      player.currentTime = 0;
-      player.play();
-    }
-
-    function loadCart() {
-      try {
-        return JSON.parse(localStorage.getItem('cart')) || {};
-      } catch {
-        return {};
-      }
-    }
-
-    function saveCart(cart) {
-      localStorage.setItem('cart', JSON.stringify(cart));
-    }
-
-    function decreaseItem(itemName) {
-      playClick();
-      const cart = loadCart();
-      if (cart[itemName]) {
-        cart[itemName].quantity -= 1;
-        if (cart[itemName].quantity <= 0) {
-          delete cart[itemName];
-        }
-        saveCart(cart);
-        renderCart();
-      }
-    }
-
-    function clearCart() {
-      playClick();
-      if (confirm("Are you sure you want to clear your cart?")) {
-        localStorage.removeItem('cart');
-        renderCart();
-      }
-    }
-
-    function formatPrice(num) {
-      return (typeof num === 'number' && !isNaN(num)) ? num.toFixed(2) : '0.00';
-    }
-
-    function renderCart() {
-      const cart = loadCart();
-      const cartDiv = document.getElementById('cartItems');
-      cartDiv.innerHTML = '';
-      let total = 0;
-
-      if (Object.keys(cart).length === 0) {
-        cartDiv.innerText = "Your cart is empty.";
-        return;
-      }
-
-      for (const item in cart) {
-        const entry = cart[item];
-        const quantity = entry.quantity ?? 0;
-        const price = entry.price ?? 0;
-        const subtotal = price * quantity;
-        total += subtotal;
-
-        const div = document.createElement('div');
-        div.className = 'item';
-        div.innerHTML = `
-          <span>${item} — $${formatPrice(price)} × ${quantity} = $${formatPrice(subtotal)}</span>
-          <div class="item-buttons">
-            <button class="btn decrease-btn" onclick="decreaseItem('${item}')">−</button>
-          </div>
-        `;
-        cartDiv.appendChild(div);
-      }
-
-      const totalDiv = document.createElement('div');
-      totalDiv.style.marginTop = '15px';
-      totalDiv.innerHTML = `<strong>Total: $${formatPrice(total)}</strong>`;
-      cartDiv.appendChild(totalDiv);
-    }
-
-    function goBack() {
-      history.back();
-    }
-
-    function checkout() {
- 	 playClick();
-  	window.location.href = "checkout.html";
-      }
-
-
-    renderCart(); // Initialize cart on page load
-  </script>
+  <script src="shop.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderCart();
+  });
+</script>
 
 </body>
 </html>

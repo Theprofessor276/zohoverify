@@ -65,67 +65,7 @@
   <div class="item" onclick="playClick(); addToCart('Item 2', 14.99)">Item 2 - $14.99</div>
   <div class="item" onclick="playClick(); addToCart('Item 3', 4.50)">Item 3 - $4.50</div>
 
-  <script>
-    // 🔊 Paths to click sounds
-    const clickPaths = [
-      "kenney_interface-sounds/Audio/click_001.ogg",
-      "kenney_interface-sounds/Audio/click_002.ogg",
-      "kenney_interface-sounds/Audio/click_003.ogg",
-      "kenney_interface-sounds/Audio/click_004.ogg",
-      "kenney_interface-sounds/Audio/click_005.ogg"
-    ];
-
-    function playClick() {
-      const player = document.getElementById("clickPlayer");
-      const randomSound = clickPaths[Math.floor(Math.random() * clickPaths.length)];
-      player.src = randomSound;
-      player.currentTime = 0;
-      player.play();
-    }
-
-    function loadCart() {
-      try {
-        return JSON.parse(localStorage.getItem('cart')) || {};
-      } catch {
-        return {};
-      }
-    }
-
-    function saveCart(cart) {
-      localStorage.setItem('cart', JSON.stringify(cart));
-    }
-
-    function addToCart(itemName, price) {
-      const cart = loadCart();
-
-      if (!cart[itemName]) {
-        cart[itemName] = {
-          quantity: 1,
-          price: parseFloat(price)
-        };
-      } else {
-        cart[itemName].quantity += 1;
-      }
-
-      saveCart(cart);
-      updateCartCount();
-    }
-
-    function updateCartCount() {
-      const cart = loadCart();
-      let count = 0;
-      for (const item in cart) {
-        count += cart[item].quantity || 0;
-      }
-      document.getElementById('cartCount').innerText = count;
-    }
-
-    function goToCart() {
-      window.location.href = "cart.html";
-    }
-
-    updateCartCount(); // Initialize on page load
-  </script>
+  <script src="shop.js"></script>
 
 </body>
 </html>
